@@ -29,7 +29,7 @@ export const ArticleParamsForm = ({
 	currentArticleState,
 	setCurrentArticleState,
 }: paramsProps) => {
-	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
 	const rootRef = useRef<HTMLDivElement>(null);
 	const [selectState, setSelectState] =
 		useState<ArticleStateType>(currentArticleState);
@@ -38,30 +38,35 @@ export const ArticleParamsForm = ({
 		setSelectState({ ...selectState, [key]: value });
 	};
 
+	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		setCurrentArticleState(selectState);
+	};
+
+	const handleFormReset = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		setCurrentArticleState(defaultArticleState);
+		setSelectState(defaultArticleState);
+	};
+
 	useOutsideClickClose({
-		isOpen,
+		isFormOpen,
 		rootRef,
-		onClose: () => setIsOpen(false),
-		onChange: setIsOpen,
+		onClose: () => setIsFormOpen(false),
+		onChange: setIsFormOpen,
 		event: 'mousedown',
 	});
 
 	return (
 		<div>
-			<ArrowButton onClick={setIsOpen} isOpen={isOpen} />
+			<ArrowButton onClick={setIsFormOpen} isOpen={isFormOpen} />
 			<aside
 				ref={rootRef}
-				className={clsx(styles.container, isOpen && styles.container_open)}>
+				className={clsx(styles.container, isFormOpen && styles.container_open)}>
 				<form
 					className={styles.form}
-					onSubmit={(e) => {
-						e.preventDefault();
-						setCurrentArticleState(selectState);
-					}}
-					onReset={(e) => {
-						e.preventDefault();
-						setCurrentArticleState(defaultArticleState);
-					}}>
+					onSubmit={handleFormSubmit}
+					onReset={handleFormReset}>
 					<Text as='h2' size={31} weight={800} uppercase>
 						Задайте параметры
 					</Text>
